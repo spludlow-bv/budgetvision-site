@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BudgetVision — Coming Soon</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --teal-mid: #2A7F8E;
+  --teal-deep: #1A5F6A;
+  --amber: #C4741A;
+  --ink: #111C1E;
+  --slate: #6B7C7E;
+  --offwhite: #F2F5F5;
+}
+
+body {
+  font-family: 'DM Sans', 'Helvetica Neue', Arial, sans-serif;
+  background: var(--ink);
+  color: var(--offwhite);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Background effects */
+.bg-glow {
+  position: fixed;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 600px; height: 400px;
+  background: radial-gradient(ellipse, rgba(26,95,106,0.22) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.bg-grid {
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(42,127,142,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(42,127,142,0.05) 1px, transparent 1px);
+  background-size: 48px 48px;
+  -webkit-mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, black 20%, transparent 75%);
+  mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, black 20%, transparent 75%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Content */
+.container {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 520px;
+  width: 100%;
+  animation: fadeUp 0.7s ease forwards;
+}
+
+.wordmark {
+  font-family: 'Barlow Condensed', 'Arial Narrow', Arial, sans-serif;
+  font-size: 38px;
+  letter-spacing: 0.05em;
+  line-height: 1;
+  margin-bottom: 32px;
+  text-decoration: none;
+}
+.wordmark .b { font-weight: 300; color: var(--offwhite); }
+.wordmark .v { font-weight: 600; color: var(--teal-mid); }
+
+.divider {
+  width: 32px;
+  height: 1px;
+  background: rgba(42,127,142,0.45);
+  margin-bottom: 32px;
+}
+
+.description {
+  font-size: 17px;
+  font-weight: 300;
+  line-height: 1.7;
+  color: rgba(242,245,245,0.72);
+  margin-bottom: 16px;
+  max-width: 440px;
+}
+.description strong {
+  color: var(--offwhite);
+  font-weight: 500;
+}
+
+.status {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--slate);
+  margin-bottom: 40px;
+  letter-spacing: 0.03em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--teal-mid);
+  flex-shrink: 0;
+  animation: pulse 2.5s ease infinite;
+}
+
+/* Form */
+.form-wrap {
+  width: 100%;
+  max-width: 400px;
+  margin-bottom: 10px;
+}
+
+.form-row {
+  display: flex;
+  border-radius: 5px;
+  overflow: hidden;
+  border: 1px solid rgba(42,127,142,0.28);
+  transition: border-color 0.2s;
+}
+.form-row:focus-within { border-color: rgba(42,127,142,0.6); }
+
+.form-row input {
+  flex: 1;
+  background: rgba(26,95,106,0.12);
+  border: none;
+  padding: 13px 16px;
+  font-family: 'DM Sans', 'Helvetica Neue', Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 300;
+  color: var(--offwhite);
+  outline: none;
+  min-width: 0;
+  -webkit-appearance: none;
+}
+.form-row input::placeholder { color: var(--slate); }
+.form-row input.error { background: rgba(239,68,68,0.1); }
+
+.form-row button {
+  background: var(--amber);
+  border: none;
+  padding: 13px 20px;
+  font-family: 'DM Sans', 'Helvetica Neue', Arial, sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink);
+  cursor: pointer;
+  white-space: nowrap;
+  letter-spacing: 0.02em;
+  transition: background 0.2s;
+  flex-shrink: 0;
+  -webkit-appearance: none;
+}
+.form-row button:hover { background: #d4841a; }
+.form-row button:disabled { opacity: 0.6; cursor: default; }
+
+.form-note {
+  font-size: 11px;
+  font-weight: 300;
+  color: rgba(107,124,126,0.65);
+  margin-bottom: 48px;
+}
+
+/* Success */
+.success {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 48px;
+  padding: 24px;
+}
+
+.success-icon {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: rgba(26,95,106,0.2);
+  border: 1px solid rgba(42,127,142,0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  margin-bottom: 8px;
+}
+
+.success-text {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--offwhite);
+}
+
+.success-sub {
+  font-size: 12px;
+  font-weight: 300;
+  color: var(--slate);
+}
+
+/* Meta */
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 11px;
+  font-weight: 300;
+  color: rgba(107,124,126,0.5);
+  letter-spacing: 0.03em;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.meta-sep {
+  width: 1px; height: 10px;
+  background: rgba(107,124,126,0.22);
+}
+
+/* Animations */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  body { padding: 48px 20px; }
+  .form-row { flex-direction: column; }
+  .form-row input { border-radius: 4px 4px 0 0; }
+  .form-row button { border-radius: 0 0 4px 4px; padding: 13px; text-align: center; }
+  .description { font-size: 15px; }
+  .meta { gap: 10px; }
+  .meta-sep { display: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="bg-glow"></div>
+<div class="bg-grid"></div>
+
+<div class="container">
+
+  <div class="wordmark">
+    <span class="b">BUDGET</span><span class="v">VISION</span>
+  </div>
+
+  <div class="divider"></div>
+
+  <p class="description">
+    Departments track costs. Line producers see everything. <strong>Cost reports aligned with Movie Magic and SmartAccounting, on demand.</strong>
+  </p>
+
+  <div class="status">
+    <div class="status-dot"></div>
+    In development — pilot launching late 2026
+  </div>
+
+<!--
+  <div class="form-wrap" id="formWrap">
+    <div class="form-row">
+      <input type="email" id="emailInput" placeholder="your@email.com" autocomplete="email">
+      <button id="submitBtn" onclick="handleSubmit()">Request Early Access</button>
+    </div>
+  </div>
+
+  <div class="form-note" id="formNote">No spam. We'll reach out when the pilot opens.</div>
+-->
+
+  <div class="success" id="successState">
+    <div class="success-icon">✓</div>
+    <div class="success-text">You're on the list.</div>
+    <div class="success-sub">We'll be in touch before the pilot opens.</div>
+  </div>
+
+  <div class="meta">
+    <span>Winnipeg, Manitoba</span>
+    <div class="meta-sep"></div>
+    <span>&#127809; Canadian</span>
+    <div class="meta-sep"></div>
+    <span>budgetvision.ca</span>
+  </div>
+
+</div>
+
+<script>
+  // To activate: replace YOUR_FORM_ID with your Formspree form ID (from formspree.io)
+  const FORMSPREE_ID = 'YOUR_FORM_ID';
+
+  async function handleSubmit() {
+    var input = document.getElementById('emailInput');
+    var formWrap = document.getElementById('formWrap');
+    var btn = document.getElementById('submitBtn');
+    var note = document.getElementById('formNote');
+    var success = document.getElementById('successState');
+
+    input.classList.remove('error');
+
+    if (!input.value || input.value.indexOf('@') === -1) {
+      input.classList.add('error');
+      input.focus();
+      return;
+    }
+
+    // If Formspree not yet configured, just show success
+    if (FORMSPREE_ID === 'YOUR_FORM_ID') {
+      formWrap.style.display = 'none';
+      note.style.display = 'none';
+      success.style.display = 'flex';
+      return;
+    }
+
+    btn.textContent = 'Sending...';
+    btn.disabled = true;
+
+    try {
+      var res = await fetch('https://formspree.io/f/' + FORMSPREE_ID, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({ email: input.value })
+      });
+
+      if (res.ok) {
+        formWrap.style.display = 'none';
+        note.style.display = 'none';
+        success.style.display = 'flex';
+      } else {
+        btn.textContent = 'Try again';
+        btn.disabled = false;
+      }
+    } catch(e) {
+      btn.textContent = 'Try again';
+      btn.disabled = false;
+    }
+  }
+
+  document.getElementById('emailInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') handleSubmit();
+  });
+</script>
+
+</body>
+</html>
